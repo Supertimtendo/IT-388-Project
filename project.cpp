@@ -20,6 +20,16 @@ int main(int argc, char **argv){
     project.setType(type);
     project.file = project.inputFile(fileName);
 
+    int N;
+    int nproc;
+    int rank;
+    MPI_Init(&argc, &argv);
+    MPI_Comm comm = MPI_COMM_WORLD;
+    MPI_Comm_size(comm, &nproc);
+    MPI_Comm_rank(comm, &rank);
+
+    MPI_Barrier(comm);
+    double start = MPI_Wtime();
     //Time series
     if(project.getType()==0){
 
@@ -30,6 +40,12 @@ int main(int argc, char **argv){
 
     }
 
+    double end = MPI_Wtime() - start;
+
+    cout<<"Time: "<<fabs(end);
+
+    MPI_Finalize();
+    return 0;
 }
 
 /**
