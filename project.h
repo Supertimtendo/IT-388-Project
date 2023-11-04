@@ -34,6 +34,8 @@ public:
 
     int* timeSeriesMatch(int* input);
     int** imageMatch(int** input);
+    int** grayScaleConvert(int** input);
+
 };
 
 

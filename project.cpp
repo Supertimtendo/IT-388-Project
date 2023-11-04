@@ -79,6 +79,14 @@ int** Project::imageMatch(int** input){
 }
 
 /**
+ * Method to convert image to grayscale
+ * @param input Input array image
+ * @return Grayscale array
+ */
+int** Project::grayScaleConvert(int** input){
+
+}
+/**
  * Parses input file for time series data
  * @param file File input
  * @return Returns 1D of data
