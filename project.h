@@ -18,10 +18,11 @@ class Project {
 private:
     int type;
 public:
-    ofstream file;
+    ofstream inputFile;
+    ofstream templateFile;
     Project();
     ~Project();
-    ofstream inputFile(string fileName);
+    ofstream fileInput(string fileName);
     void setType(int type){
         type = this->type;
     }
@@ -29,12 +30,10 @@ public:
         return type;
     }
 
-    int* parseTimeSeries(ofstream file);
-    int** parseImage(ofstream file);
+    double* parseTimeSeries(string line);
 
-    int* timeSeriesMatch(int* input);
-    int** imageMatch(int** input);
-    int** grayScaleConvert(int** input);
+    int timeSeriesMatch(int* input);
+    int** imageMatch(int** input, int** temp);
 
 };
 
