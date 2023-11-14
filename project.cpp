@@ -1,5 +1,6 @@
 //
 // Created by Tim on 10/25/2023.
+// ./project <input_file> <template_file> <type>
 //
 
 #include "project.h"
@@ -8,7 +9,7 @@
 using namespace std;
 
 int main(int argc, char **argv){
-    if(argc<5){
+    if(argc != 4){
         cout<< "Correct usage: ./project <input_file> <template_file> <type>\n Type: 0 -> Time series\n1 -> Image";
 		exit(1);
     }
@@ -165,7 +166,7 @@ double* Project::parseTimeSeries(string line){
 	double data[1000];
 	int count=0;
 	while(getline(line, s, ' ')){
-		data[count} = s;
+		data[count] = s;
 		count++;
 	}
 	return data;
