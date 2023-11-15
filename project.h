@@ -30,8 +30,6 @@ public:
         return type;
     }
 
-    double* parseTimeSeries(string line);
-
     int timeSeriesMatch(int* input);
     int** imageMatch(int** input, int** temp);
 

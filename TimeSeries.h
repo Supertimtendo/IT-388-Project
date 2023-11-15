@@ -18,6 +18,7 @@ Class TimeSeries {
     private:
         int size;
         vector<double> series;
+        vector<double> template;
 
     public:
         //Constructor
@@ -29,8 +30,11 @@ Class TimeSeries {
         //Create time series from input file
         void parseSeries(ifstream file);
 
+        //Create template series from input file
+        void parseTemplate(ifstream file);
+
         //Template match the series with a given template
-        int[] matchSeries(vector<double> template);
+        double[] matchSeries();
 }
 
 #endif //TIMESERIES_H_
