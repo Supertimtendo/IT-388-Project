@@ -8,6 +8,7 @@ using namespace std;
 void TimeSeries::parseSeries(ifstream file){
     if(file.fail()){
         cout << "File could not be opened\n" << endl;
+        exit(1);
     }
 
     //string variable
