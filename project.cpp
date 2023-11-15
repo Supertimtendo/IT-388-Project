@@ -4,6 +4,7 @@
 //
 
 #include "project.h"
+#include "TimeSeries.h"
 #include <opencv2/opencv.hpp>
 
 using namespace std;
@@ -42,25 +43,19 @@ int main(int argc, char **argv){
 
 	//Time series
     if(project.getType()==0){
-		string line;
-		//Gets data from data file
-		getline(project.inputFile, line);
+		//Time Series creation
+		TimeSeries timeSer;
+		timeSer.parseSeries(project.inputFile);
 
-		double* timeData = project.timeSeriesMatch(line);
+		//Get template data
+		timeSer.parseTemplate(project.templateFile);
 
-		getline(project.inputFile, line);
+		//Perform TemplateMatching
+		double[] results;
+		results = timeSer.matchTemplate();
 
-		double* dataData = project.timeSeriesMatch(line);
-
-
-		//Gets data from template file
-		getline(project.templateFile, line);
-
-		double* timeTemplate = project.timeSeriesMatch(line);
-
-		getline(project.templateFile, line);
-
-		double* dataTemplate = project.timeSeriesMatch(line);
+		printf("Best Position for matching with template: %f\n", results[0]);
+		printf("SAD value of best position: %f\n", results[1]);
 	}
 
     //Image
@@ -110,8 +105,9 @@ int main(int argc, char **argv){
  * @param fileName Name of file to open
  * @return Returns file
  */
-ofstream Project::fileInput(string fileName){
-    file.open(fileName, ofstream::out);
+ifstream Project::fileInput(string fileName){
+	ifstream file(fileName);
+    file.open(fileName);
     if(file.fail()){
         cout<< "File cannot be opened";
 		exit(2);
@@ -154,20 +150,4 @@ int Project::timeSeriesMatch(double* input, double* temp){
 int** Project::imageMatch(int** input, int** temp){
 
 
-}
-
-/**
- * Parses input file for time series data
- * @param file File input
- * @return Returns 1D of data
- */
-double* Project::parseTimeSeries(string line){
-	string s;
-	double data[1000];
-	int count=0;
-	while(getline(line, s, ' ')){
-		data[count] = s;
-		count++;
-	}
-	return data;
 }

@@ -7,7 +7,6 @@
 #ifndef PROJECT_PROJECT_H
 #define PROJECT_PROJECT_H
 
-#include <mpi.h>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -29,8 +28,6 @@ public:
     int getType(){
         return type;
     }
-
-    double* parseTimeSeries(string line);
 
     int timeSeriesMatch(int* input);
     int** imageMatch(int** input, int** temp);
