@@ -7,7 +7,6 @@
 #ifndef PROJECT_PROJECT_H
 #define PROJECT_PROJECT_H
 
-#include <mpi.h>
 #include <iostream>
 #include <fstream>
 #include <cmath>

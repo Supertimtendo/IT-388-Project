@@ -6,11 +6,9 @@
 #ifndef TIMESERIES_H_
 #define TIMESERIES_H_
 
-#include <mpi.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <cmath>
 
 using namespace std;
 
