@@ -1,11 +1,3 @@
-/* File: mpi_array.c
- Processing array using point-to-point communication
- 
- Name:
- 
- Activity 03 - IT 388 - Fall 2023
- */
-
 #include <iostream>
 #include <fstream>
 #include <vector>
