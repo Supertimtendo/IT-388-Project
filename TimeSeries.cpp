@@ -52,7 +52,7 @@ double* TimeSeries::matchSeries(){
     //Temp max value
 	double minSAD = 10000;
     double SAD = 0.0;
-
+    double bestSAD = minSAD;
     //Loop through series
 	for(int i = 0; i < this->series.size() - this->temp.size(); i++){
 		SAD = 0.0;
@@ -65,10 +65,11 @@ double* TimeSeries::matchSeries(){
 			minSAD = SAD;
 			//Stores index start of best matched template (go til length of template)
 			position = i;
+            bestSAD = SAD;
 		}
 	}
-    printf("Best SAD: %f", SAD);
+
     arr[0] = position;
-    arr[1] = SAD;
+    arr[1] = bestSAD;
 	return arr;
 }

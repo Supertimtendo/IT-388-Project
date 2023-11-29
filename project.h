@@ -10,6 +10,9 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <math.h>
+#include "TimeSeries.h"
+#include "ImageMatch.h"
 
 using namespace std;
 

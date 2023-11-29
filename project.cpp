@@ -4,8 +4,7 @@
 //
 
 #include "project.h"
-#include "TimeSeries.h"
-#include <opencv2/opencv.hpp>
+
 
 using namespace std;
 
@@ -60,34 +59,15 @@ int main(int argc, char **argv){
 
     //Image
     else{
-		//Convert both files to grayscale
-		Mat imageData = imread(fileName, IMREAD_GRAYSCALE);
-		Mat imageTemplate = imread(templateName, IMREAD_GRAYSCALE);
+        ImageMatch imgMatch;
+        imgMatch.parseImage(fileName);
+        imgMatch.parseTemplate(fileName);
 
-		//Get files as arrays
-		std::vector<uchar> imageVec(imageData.rows*imageData.cols*imageData.channels());
-		imageVec = imageData.data;
+        double* results;
+        results = imgMatch.matchImage();
 
-		//Convert to 2d Array
-		uchar imageArr[imageData.rows][imageData.cols];
-		for(int i=0;i<imageData.rows;i++){
-			for(int j=0;j<imageData.cols;j++){
-				imageArr[i][j] = imageVec.at(i*j);
-			}
-		}
-
-
-		std::vector<uchar> templateVec(imageTemplate.rows*imageTemplate.cols*imageTemplate.channels());
-		templateVec = imageTemplate.data;
-
-		//Convert to 2d array
-		uchar templateArr[imageTemplate.rows][imageTemplate.cols];
-
-		for(int i=0;i<imageTemplate.rows;i++){
-			for(int j=0;j<imageTemplate.cols;j++){
-				templateArr[i][j] = templateVec.at(i*j);
-			}
-		}
+        printf("Best Position for matching with template: X: %f, Y: %f\n", results[0], results[1]);
+        printf("SAD value of best position: %f\n", results[2]);
     }
 
     /*
@@ -113,42 +93,4 @@ ifstream Project::fileInput(string fileName){
 		exit(2);
     }
 	return file;
-}
-
-
-
-/**
- * Processes a time series input
- * @return Returns 1D array
- */
-int Project::timeSeriesMatch(double* input, double* temp){
-	int position = -1;
-    double SAD = 0.0;
-	//Temp max value
-	double minSAD = 10000;
-	//Loop through input
-	for(int i=0;i<=(sizeof(input) / sizeof(double) - sizeof(temp) / sizeof(double));i++){
-		SAD = 0.0;
-		//Loop through template
-		for(int j=0;j<=sizeof(temp) / sizeof(double);j++){
-			SAD += abs(input[i+j] - temp[j]);
-		}
-
-		if(minSAD > SAD){
-			minSAD = SAD;
-			//Stores index start of best matched template (go til length of template)
-			position = i;
-		}
-	}
-	cout<<"Best SAD "<<SAD;
-	return position;
-}
-
-/**
- * Processes an image input
- * @return Returns 2D array
- */
-int** Project::imageMatch(int** input, int** temp){
-
-
 }
