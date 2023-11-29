@@ -17,18 +17,19 @@ class Project {
 private:
     int type;
 public:
-    ofstream inputFile;
-    ofstream templateFile;
+    ifstream &inputFile;
+    ifstream &templateFile;
     Project();
     ~Project();
-    ofstream fileInput(string fileName);
+    ifstream fileInput(string fileName);
+
     void setType(int type){
         type = this->type;
     }
     int getType(){
         return type;
     }
-
+    int timeSeriesMatch(double* input, double* temp);
     int timeSeriesMatch(int* input);
     int** imageMatch(int** input, int** temp);
 

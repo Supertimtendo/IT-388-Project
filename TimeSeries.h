@@ -26,13 +26,13 @@ class TimeSeries {
         ~TimeSeries();
 
         //Create time series from input file
-        void parseSeries(ifstream file);
+        void parseSeries(ifstream &file);
 
         //Create template series from input file
-        void parseTemplate(ifstream file);
+        void parseTemplate(ifstream &file);
 
         //Template match the series with a given template
-        int matchSeries();
+        double* matchSeries();
 };
 
 #endif //TIMESERIES_H_

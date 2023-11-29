@@ -1,11 +1,9 @@
 #include "timeSeries.h"
 #include <iostream>
-#include <fstream>
-#include <vector>
 
 using namespace std;
 
-void TimeSeries::parseSeries(ifstream file){
+void TimeSeries::parseSeries(ifstream &file){
     if(file.fail()){
         cout << "File could not be opened\n" << endl;
         exit(1);
@@ -24,7 +22,7 @@ void TimeSeries::parseSeries(ifstream file){
     file.close();
 }
 
-void TimeSeries::parseTemplate(ifstream file){
+void TimeSeries::parseTemplate(ifstream &file){
     if(file.fail()){
         cout << "File could not be opened\n" << endl;
         exit(1);
@@ -47,7 +45,7 @@ void TimeSeries::parseTemplate(ifstream file){
  * Template match series and template
  * @return Returns array with position and SAD values
  */
-int TimeSeries::matchSeries(){
+double* TimeSeries::matchSeries(){
     int position = -1;
     double arr[] = {1000, 1000};
 
@@ -72,5 +70,5 @@ int TimeSeries::matchSeries(){
     printf("Best SAD: %f", SAD);
     arr[0] = position;
     arr[1] = SAD;
-	return position;
+	return arr;
 }

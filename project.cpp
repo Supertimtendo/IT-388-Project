@@ -51,8 +51,8 @@ int main(int argc, char **argv){
 		timeSer.parseTemplate(project.templateFile);
 
 		//Perform TemplateMatching
-		double[] results;
-		results = timeSer.matchTemplate();
+		double* results;
+		results = timeSer.matchSeries();
 
 		printf("Best Position for matching with template: %f\n", results[0]);
 		printf("SAD value of best position: %f\n", results[1]);
@@ -72,7 +72,7 @@ int main(int argc, char **argv){
 		uchar imageArr[imageData.rows][imageData.cols];
 		for(int i=0;i<imageData.rows;i++){
 			for(int j=0;j<imageData.cols;j++){
-				imageArr[i][j] = imageVec.get(i*j);
+				imageArr[i][j] = imageVec.at(i*j);
 			}
 		}
 
@@ -85,7 +85,7 @@ int main(int argc, char **argv){
 
 		for(int i=0;i<imageTemplate.rows;i++){
 			for(int j=0;j<imageTemplate.cols;j++){
-				templateArr[i][j] = templateVec.get(i*j);
+				templateArr[i][j] = templateVec.at(i*j);
 			}
 		}
     }
@@ -123,11 +123,12 @@ ifstream Project::fileInput(string fileName){
  */
 int Project::timeSeriesMatch(double* input, double* temp){
 	int position = -1;
+    double SAD = 0.0;
 	//Temp max value
 	double minSAD = 10000;
 	//Loop through input
 	for(int i=0;i<=(sizeof(input) / sizeof(double) - sizeof(temp) / sizeof(double));i++){
-		double SAD = 0.0;
+		SAD = 0.0;
 		//Loop through template
 		for(int j=0;j<=sizeof(temp) / sizeof(double);j++){
 			SAD += abs(input[i+j] - temp[j]);
