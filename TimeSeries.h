@@ -12,11 +12,11 @@
 
 using namespace std;
 
-Class TimeSeries {
+class TimeSeries {
     private:
         int size;
         vector<double> series;
-        vector<double> template;
+        vector<double> temp;
 
     public:
         //Constructor
@@ -32,7 +32,7 @@ Class TimeSeries {
         void parseTemplate(ifstream file);
 
         //Template match the series with a given template
-        double[] matchSeries();
-}
+        int matchSeries();
+};
 
 #endif //TIMESERIES_H_

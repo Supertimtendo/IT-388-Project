@@ -37,7 +37,7 @@ void TimeSeries::parseTemplate(ifstream file){
     while(getline(file, val))
     {
         double data = stod(val);
-        this->template.push_back(data);
+        this->temp.push_back(data);
     }
 
     file.close();
@@ -47,20 +47,20 @@ void TimeSeries::parseTemplate(ifstream file){
  * Template match series and template
  * @return Returns array with position and SAD values
  */
-double[] TimeSeries::matchTemplate(){
+int TimeSeries::matchSeries(){
     int position = -1;
-    double[] arr = {1000, 1000};
+    double arr[] = {1000, 1000};
 
     //Temp max value
 	double minSAD = 10000;
     double SAD = 0.0;
 
     //Loop through series
-	for(int i = 0; i < this->series.size() - this->template.size(); i++){
+	for(int i = 0; i < this->series.size() - this->temp.size(); i++){
 		SAD = 0.0;
 		//Loop through template
-		for(int j = 0; j <= template.size(); j++){
-			SAD += abs(this->series[i+j] - this->template[j]);
+		for(int j = 0; j <= temp.size(); j++){
+			SAD += abs(this->series[i+j] - this->temp[j]);
 		}
 
 		if(SAD < minSAD){
