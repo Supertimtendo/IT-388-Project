@@ -9,7 +9,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 
 using namespace std;
 

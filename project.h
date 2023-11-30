@@ -11,8 +11,8 @@
 #include <fstream>
 #include <cmath>
 #include <math.h>
-#include "TimeSeries.h"
-#include "ImageMatch.h"
+#include "TimeSeries.cpp"
+#include "ImageMatch.cpp"
 
 using namespace std;
 

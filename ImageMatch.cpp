@@ -74,10 +74,10 @@ double* ImageMatch::matchImage(){
             //Loop through template image
             for(int j = 0; j < tempCol; j++){
                 for(int i = 0; i < tempRow; i++){
-                    //pixel p_SearchIMG = S[y+i][x+j];
-                    //pixel p_TemplateIMG = T[i][j];
+                    int p_SearchIMG = this->imageArr[y+i][x+j];
+                    int p_TemplateIMG = this->templateArr[i][j];
 
-                    //SAD += abs( p_SearchIMG.Grey - p_TemplateIMG.Grey );
+                    SAD += abs(p_SearchIMG - p_TemplateIMG);
                 }
             }
 

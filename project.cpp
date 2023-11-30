@@ -5,7 +5,6 @@
 
 #include "project.h"
 
-
 using namespace std;
 
 int main(int argc, char **argv){
@@ -59,6 +58,7 @@ int main(int argc, char **argv){
 
     //Image
     else{
+
         ImageMatch imgMatch;
         imgMatch.parseImage(fileName);
         imgMatch.parseTemplate(fileName);
@@ -68,6 +68,7 @@ int main(int argc, char **argv){
 
         printf("Best Position for matching with template: X: %f, Y: %f\n", results[0], results[1]);
         printf("SAD value of best position: %f\n", results[2]);
+
     }
 
     /*
