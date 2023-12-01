@@ -2,8 +2,8 @@
 // Created by Tim on 11/29/2023.
 //
 
-#ifndef PROJECT_IMAGEMATCH_H
-#define PROJECT_IMAGEMATCH_H
+#ifndef IMAGEMATCH_H
+#define IMAGEMATCH_H
 
 #include <iostream>
 #include <fstream>
@@ -15,8 +15,8 @@ using namespace std;
 
 class ImageMatch {
     private:
-        unsigned char** imageArr;
-        unsigned char** templateArr;
+        vector<vector<int>> imageVec;
+        vector<vector<int>> templateVec;
 
     public:
         //Constructor
@@ -32,8 +32,12 @@ class ImageMatch {
         void parseTemplate(string fileName);
 
         //Template match the series with a given template
-        double* matchImage();
+        vector<double> matchImage();
+
+        vector<vector<int>> getImage(){ return this->imageVec;};
+
+        vector<vector<int>> getTemplate(){ return this->templateVec; };
 };
 
 
-#endif //PROJECT_IMAGEMATCH_H
+#endif //IMAGEMATCH_H

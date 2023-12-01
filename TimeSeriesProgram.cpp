@@ -11,15 +11,14 @@ vector<double> parseTemplate(string fileName, vector<double> data);
 int matchTemplate(vector<double> series, vector<double> temp);
 
 int main(int argc, char* argv[]){
-    if(argc != 4){
-        cout<< "Correct usage: ./project <input_file> <template_file> <type>\n Type: 0 -> Time series\n1 -> Image";
+    if(argc != 3){
+        cout<< "Correct usage: ./project <input_file> <template_file> \n";
 		exit(1);
     }
 
     //Variable setup
     string fileName = argv[1];
 	string templateName = argv[2];
-    int type = atoi(argv[3]);
 
     vector<double> series;
     vector<double> temp;
