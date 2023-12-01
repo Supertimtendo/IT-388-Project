@@ -1,83 +1,118 @@
 #include "ImageMatch.h"
+#include <vector>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
+ImageMatch::ImageMatch(){
+
+}
+
+ImageMatch::~ImageMatch(){
+
+}
+
 void ImageMatch::parseImage(string fileName){
     ifstream file(fileName);
-    if(file.fail()){
-        cout<< "File cannot be opened";
-        exit(2);
+
+    if (!file.is_open()) {
+        cout << "Error: Unable to open the file." << endl;
+        exit(1);
     }
-    Mat imageData = imread(fileName, IMREAD_GRAYSCALE);
 
-    //Get files as arrays
-    std::vector<unsigned char> imageVec(imageData.rows*imageData.cols*imageData.channels());
-    imageVec = imageData.data;
+    // Create a 2D vector to store integers
+    vector<vector<int>> image;
 
-    //Convert to 2d Array
-    this->imageArr[imageData.rows][imageData.cols];
-    for(int i=0;i<imageData.rows;i++){
-        for(int j=0;j<imageData.cols;j++){
-            this->imageArr[i][j] = imageVec.at(i*j);
+    // Read each line from the file
+    string line;
+    while (getline(file, line)) {
+        vector<int> row;
+        istringstream iss(line);
+
+        // Read integers from the line
+        int num;
+        while (iss >> num) {
+            row.push_back(num);
         }
+
+        // Add the row to the image
+        image.push_back(row);
     }
 
+    this->imageVec = image;
+
+    // Close the file
+    file.close();
 }
 
 void ImageMatch::parseTemplate(string fileName){
     ifstream file(fileName);
-    if(file.fail()){
-        cout<< "File cannot be opened";
-        exit(2);
+
+    if (!file.is_open()) {
+        cout << "Error: Unable to open the file." << endl;
+        exit(1);
     }
 
-    Mat imageTemplate = imread(fileName, IMREAD_GRAYSCALE);
+    // Create a 2D vector to store integers
+    vector<vector<int>> image;
 
-    //Get files as arrays
-    std::vector<unsigned char> templateVec(imageTemplate.rows*imageTemplate.cols*imageTemplate.channels());
-    templateVec = imageTemplate.data;
+    // Read each line from the file
+    string line;
+    while (getline(file, line)) {
+        vector<int> row;
+        istringstream iss(line);
 
-    //Convert to 2d Array
-    this->templateArr[imageTemplate.rows][imageTemplate.cols];
-    for(int i=0;i<imageTemplate.rows;i++){
-        for(int j=0;j<imageTemplate.cols;j++){
-            this->templateArr[i][j] = templateVec.at(i*j);
+        // Read integers from the line
+        int num;
+        while (iss >> num) {
+            row.push_back(num);
         }
+
+        // Add the row to the image
+        image.push_back(row);
     }
+
+    this->templateVec = image;
+
+    // Close the file
+    file.close();
 }
 
 /**
  * Template match series and template
  * @return Returns array with position and SAD values
  */
-double* ImageMatch::matchImage(){
+vector<double> ImageMatch::matchImage(){
     //Stores rows, cols value for both arrays
-    int baseRow = sizeof this->imageArr / sizeof this->imageArr[0];
-    int baseCol = sizeof this->imageArr[0] / sizeof this->imageArr[0][0];
-    int tempRow = sizeof this->templateArr / sizeof this->templateArr[0];
-    int tempCol = sizeof this->templateArr[0] / sizeof this->templateArr[0][0];
+    int baseRow = this->imageVec.size();
+    int baseCol = this->imageVec[0].size();
+    int tempRow = this->templateVec.size();
+    int tempCol = this->templateVec[0].size();
 
     int xPos = -1;
     int yPos = -1;
-    double arr[] = {0, 0, 0};
+    vector<double> arr = {0, 0, 0};
 
     //Temp max value
-    double minSAD = 10000;
+    double minSAD = 255 * this->imageVec.size();
     double SAD = 0.0;
     double bestSAD = minSAD;
 
     //Loop through base image
-    for(int x = 0; x <= baseCol - tempCol; x++){
-        for(int y = 0; y<= baseRow - tempRow; y++){
+    for(int x = 0; x < baseCol - tempCol; x++){
+        for(int y = 0; y < baseRow - tempRow; y++){
             SAD = 0.0;
             //Loop through template image
             for(int j = 0; j < tempCol; j++){
                 for(int i = 0; i < tempRow; i++){
-                    int p_SearchIMG = this->imageArr[y+i][x+j];
-                    int p_TemplateIMG = this->templateArr[i][j];
+                    int p_SearchIMG = this->imageVec[y+i][x+j];
+                    int p_TemplateIMG = this->templateVec[i][j];
 
                     SAD += abs(p_SearchIMG - p_TemplateIMG);
+                }
+                if(x % 10 == 0){
+                    cout << SAD << endl;
                 }
             }
 
