@@ -1,5 +1,7 @@
 /*
 Parallelized Time Series Program with MPI
+compile - mpi++ -g -Wall -o series TimeSeriesParallelProgram.cpp
+run - mpiexec -n 4 ./series <fileA> <fileB>
 */
 
 #include <iostream>
@@ -9,11 +11,11 @@ Parallelized Time Series Program with MPI
 
 using namespace std;
 
-vector<double> createSeries(string fileName, vector<double> data);
+int createSeries(string fileName, double*& data);
 
-vector<double> parseTemplate(string fileName, vector<double> data);
+int parseTemplate(string fileName, double*& data);
 
-vector<int> matchTemplate(vector<double> series, vector<double> temp, int local_x, int work);
+vector<int> matchTemplate(double* series, double* temp, int tempSize, int local_x, int work);
 
 int main(int argc, char* argv[]){
     //MPI Initialize
@@ -28,38 +30,44 @@ int main(int argc, char* argv[]){
     int minSAD = 10000000;
 
     if (argc != 3){
-        if (world_rank == 0)
+        if (rank == 0)
             cout << "Correct usage: mpirun -n <num_processes> ./project <input_file> <template_file> \n";
         MPI_Finalize();
-        exit(1);
+        return 0;
     }
 
     //Variable setup
     string fileName = argv[1];
 	string templateName = argv[2];
 
-    vector<double> series;
-    vector<double> temp;
+    double* serArr;
+    double* tempArr;
+
+    int serSize;
+    int tempSize;
 
     if(rank == 0){
         // Create series
-        series = createSeries(fileName, series);
+        serSize = createSeries(fileName, serArr);
 
         //Create template
-        temp = parseTemplate(templateName, temp);
+        tempSize = parseTemplate(templateName, tempArr);
     }
 
-    MPI_Bcast(&series, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&temp, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&serSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&tempSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    MPI_Bcast(serArr, serSize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(tempArr, tempSize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     //Match
-    int work = (series.size() - temp.size()) / nproc;
+    int work = (serSize - tempSize) / nproc;
     int local_x = work * rank;
 
     MPI_Barrier(MPI_COMM_WORLD);
     double start = MPI_Wtime();
 
-    vector<int> local_Result = matchTemplate(series, temp, local_x, work);
+    vector<int> local_Result = matchTemplate(serArr, tempArr, tempSize, local_x, work);
 
     // Each process inserts its local vector into the global vector
     for (int i = 0; i < nproc; ++i) {
@@ -85,9 +93,12 @@ int main(int argc, char* argv[]){
         cout << "Time: " << elapsedTime << endl;
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Finalize();
+    return 0;
 }
 
-vector<double> createSeries(string fileName, vector<double> data){
+int createSeries(string fileName, double* &data){
     ifstream infile(fileName);
     if(infile.fail()){
         cout << "File could not be opened\n" << endl;
@@ -96,21 +107,20 @@ vector<double> createSeries(string fileName, vector<double> data){
 
     //string variable
     string val;
+    int count = 0;
 
     //While loop to read all values into the series vector
     while(getline(infile, val))
     {
         double num = stod(val);
-        data.push_back(num);
-        cout << num << " ";
+        data[count] = num;
+        count++;
     }
-
-    cout << endl;
     infile.close();
-    return data;
+    return count;
 }
 
-vector<double> parseTemplate(string fileName, vector<double> data){
+int parseTemplate(string fileName, double*& data){
     ifstream infile(fileName);
     if(infile.fail()){
         cout << "File could not be opened\n" << endl;
@@ -119,38 +129,36 @@ vector<double> parseTemplate(string fileName, vector<double> data){
 
     //string variable
     string val;
+    int count = 0;
 
     //While loop to read all values into the series vector
     while(getline(infile, val))
     {
         double num = stod(val);
-        data.push_back(num);
-        cout << num << " ";
+        data[count] = num;
+        count++;
     }
-
-    cout << endl;
     infile.close();
-    return data;
+    return count;
 }
 
-vector<int> matchTemplate(vector<double> series, vector<double> temp, int local_x, int work){
+vector<int> matchTemplate(double* series, double* temp, int tempSize, int local_x, int work){
     int position = -1;
 
     //Temp max value
-	int minSAD = temp.size() * 255;
-    int SAD = 0.0;
+	double minSAD = tempSize * 10;
+    double SAD = 0.0;
 
     //return value
-    vector<int> result = {position, minSAD};
+    vector<int> result = {0, 0};
 
     //Loop through series
 	for(int i = local_x; i < local_x + work; i++){
 		SAD = 0.0;
 		//Loop through template
-		for(int j = 0; j < temp.size(); j++){
+		for(int j = 0; j < tempSize; j++){
 			SAD += abs(series[i+j] - temp[j]);
 		}
-        cout << SAD << endl;
 
 		if(SAD < minSAD){
 			minSAD = SAD;
@@ -158,8 +166,8 @@ vector<int> matchTemplate(vector<double> series, vector<double> temp, int local_
 			position = i + 1;
 		}
 	}
-    printf("Best SAD: %f\n", minSAD);
     result[0] = position;
-    result[1] = minSAD;
+    result[1] = int(minSAD);
 	return result;
 }
+
