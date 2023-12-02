@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
     //Other variables
-    vector<vector<int>> global_Result;
+    vector<vector<double>> global_Result;
     int bestPos;
     int minSAD = 10000000;
 
@@ -44,6 +44,66 @@ int main(int argc, char* argv[]) {
     string templateName = argv[2];
 
 
+    if(rank == 0){
+        // Create series
+        parseImage(fileName);
+
+        //Create template
+        parseTemplate(templateName);
+    }
+
+    //TODO Convert vectors to arrays
+    double** serArr;
+    double** tempArr;
+
+    int serSize = imageVec.size();
+    int tempSize = templateVec.size();
+
+
+    MPI_Bcast(&serSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&tempSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    MPI_Bcast(serArr, serSize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(tempArr, tempSize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    //Match
+    int work = (serSize - tempSize) / nproc;
+    int local_x = work * rank;
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    double start = MPI_Wtime();
+
+    vector<double> local_Result = matchImage(serArr, tempArr, tempSize, local_x, work);
+
+
+    // Each process inserts its local vector into the global vector
+    for (int i = 0; i < nproc; ++i) {
+        if (rank == i) {
+            global_Result.push_back(local_Result);
+        }
+        MPI_Barrier(MPI_COMM_WORLD);  // Ensure they wait their turn
+    }
+
+
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    double elapsedTime = MPI_Wtime() - start;
+
+    //Host gets the best vector
+    if(rank == 0){
+        for (int i = 0; i < global_Result.size(); i++){
+            if(global_Result[i][1] < minSAD){
+                minSAD = global_Result[i][1];
+                bestPos = global_Result[i][0];
+            }
+        }
+        cout << "Best Position: " << bestPos << endl;
+        cout << "SAD Value: " << minSAD << endl;
+        cout << "Time: " << elapsedTime << endl;
+    }
+
+    MPI_Finalize();
+    return 0;
 }
 
 
@@ -117,7 +177,7 @@ void parseTemplate(string fileName){
  * Template match series and template
  * @return Returns array with position and SAD values
  */
-vector<double> matchImage(){
+vector<double> matchImage(double** series, double** temp, int tempSize, int local_x, int work){
     //Stores rows, cols value for both arrays
     int baseRow = imageVec.size();
     int baseCol = imageVec[0].size();
@@ -129,7 +189,7 @@ vector<double> matchImage(){
     vector<double> arr = {0, 0, 0};
 
     //Temp max value
-    double minSAD = 255 * imageVec.size();
+    double minSAD = tempSize * 10;
     double SAD = 0.0;
     double bestSAD = minSAD;
 
