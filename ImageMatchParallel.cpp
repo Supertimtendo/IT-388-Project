@@ -12,14 +12,14 @@ run - mpiexec -n 4 ./series <fileA> <fileB>
 
 using namespace std;
 
-vector<vector<int>> imageVec;
-vector<vector<int>> templateVec;
+vector<vector<double>> imageVec;
+vector<vector<double>> templateVec;
 
 void parseImage(string fileName);
 
 void parseTemplate(string fileName);
 
-vector<double> matchImage();
+vector<double> matchImage(double** series, double** temp, int tempSize, int local_x, int work);
 
 int main(int argc, char* argv[]) {
     //MPI Initialize
@@ -52,12 +52,26 @@ int main(int argc, char* argv[]) {
         parseTemplate(templateName);
     }
 
-    //TODO Convert vectors to arrays
     double** serArr;
-    double** tempArr;
+    serArr = new double*[imageVec.size()];
+    for(int i=0;i<imageVec.size();i++){
+        serArr[i] = new double[imageVec[0].size()];
+        for(int j=0;j<imageVec[0].size();j++){
+            serArr[i][j] = imageVec.at(i).at(j);
+        }
+    }
 
-    int serSize = imageVec.size();
-    int tempSize = templateVec.size();
+    double** tempArr;
+    tempArr = new double*[templateVec.size()];
+    for(int i=0;i<templateVec.size();i++){
+        tempArr[i] = new double[templateVec[0].size()];
+        for(int j=0;j<templateVec[0].size();j++){
+            tempArr[i][j] = templateVec.at(i).at(j);
+        }
+    }
+
+    int serSize = imageVec.size()*imageVec[0].size();
+    int tempSize = templateVec.size()*templateVec[0].size();
 
 
     MPI_Bcast(&serSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -84,7 +98,8 @@ int main(int argc, char* argv[]) {
         MPI_Barrier(MPI_COMM_WORLD);  // Ensure they wait their turn
     }
 
-
+    free(serArr);
+    free(tempArr);
 
     MPI_Barrier(MPI_COMM_WORLD);
     double elapsedTime = MPI_Wtime() - start;
@@ -204,9 +219,6 @@ vector<double> matchImage(double** series, double** temp, int tempSize, int loca
                     int p_TemplateIMG = templateVec[i][j];
 
                     SAD += abs(p_SearchIMG - p_TemplateIMG);
-                }
-                if(x % 10 == 0){
-                    cout << SAD << endl;
                 }
             }
 
