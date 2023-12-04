@@ -19,7 +19,7 @@ void parseImage(string fileName);
 
 void parseTemplate(string fileName);
 
-vector<double> matchImage(double** series, double** temp, int tempSize, int local_x, int work);
+vector<double> matchImage(double** series, double** temp, int tempSize, int local_x, int local_y, int work);
 
 int main(int argc, char* argv[]) {
     //MPI Initialize
@@ -83,11 +83,12 @@ int main(int argc, char* argv[]) {
     //Match
     int work = (serSize - tempSize) / nproc;
     int local_x = work * rank;
+    int local_y = work * rank;
 
     MPI_Barrier(MPI_COMM_WORLD);
     double start = MPI_Wtime();
 
-    vector<double> local_Result = matchImage(serArr, tempArr, tempSize, local_x, work);
+    vector<double> local_Result = matchImage(serArr, tempArr, tempSize, local_x, local_y, work);
 
 
     // Each process inserts its local vector into the global vector
@@ -192,7 +193,7 @@ void parseTemplate(string fileName){
  * Template match series and template
  * @return Returns array with position and SAD values
  */
-vector<double> matchImage(double** series, double** temp, int tempSize, int local_x, int work){
+vector<double> matchImage(double** series, double** temp, int tempSize, int local_x, int local_y, int work){
     //Stores rows, cols value for both arrays
     int baseRow = imageVec.size();
     int baseCol = imageVec[0].size();
@@ -209,8 +210,8 @@ vector<double> matchImage(double** series, double** temp, int tempSize, int loca
     double bestSAD = minSAD;
 
     //Loop through base image
-    for(int x = 0; x < baseCol - tempCol; x++){
-        for(int y = 0; y < baseRow - tempRow; y++){
+    for(int x = local_x; x < local_x + work; x++){
+        for(int y = local_y; y < local_y + work; y++){
             SAD = 0.0;
             //Loop through template image
             for(int j = 0; j < tempCol; j++){
