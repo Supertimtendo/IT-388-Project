@@ -1,3 +1,5 @@
+//Sequential File
+
 #include "ImageMatch.h"
 #include <vector>
 #include <iostream>
@@ -13,6 +15,7 @@ ImageMatch::~ImageMatch(){
 
 }
 
+//Read a .txt file containing grayscale pixel values into an array
 void ImageMatch::parseImage(string fileName){
     ifstream file(fileName);
 
@@ -46,6 +49,7 @@ void ImageMatch::parseImage(string fileName){
     file.close();
 }
 
+//Read a .txt file containing grayscale pixel values into an array
 void ImageMatch::parseTemplate(string fileName){
     ifstream file(fileName);
 
@@ -80,7 +84,7 @@ void ImageMatch::parseTemplate(string fileName){
 }
 
 /**
- * Template match series and template
+ * Template match image and template
  * @return Returns array with position and SAD values
  */
 vector<double> ImageMatch::matchImage(){

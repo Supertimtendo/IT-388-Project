@@ -11,11 +11,13 @@ run - mpiexec -n 4 ./series <fileA> <fileB>
 
 using namespace std;
 
+//Read in a .txt series file and insert data into a vector
 int createSeries(string fileName, double*& data);
 
+//Read in a .txt template file and insert data into vector
 int parseTemplate(string fileName, double*& data);
 
-
+//Perform a template match of a series vector for a template vector
 void matchTemplate(double* series, double* temp, int tempSize, int local_x, int work, int& position, int& minSAD);
 
 int main(int argc, char* argv[]){

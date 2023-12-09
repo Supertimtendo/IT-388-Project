@@ -3,10 +3,10 @@
 ImageMatch.cpp - Implementation file for all Image Template matching methods.
 ImageMatch.h - Header file for all Image Template matching methods and variables.
 ImageProgram.cpp - Main that runs the Image Template matching - requires a image and a template image to run.
-//Insert Parallel Image Match Program here
+ImageMatchParallelProgram.cpp - Parallelized image matching program.
 
 TimeSeriesProgram.cpp - Currently in use, contains all methods required for template matching, requires a time series and a template series to run.
-TimeSeriesParallelProgram.cpp - Parallelized Time Series Program
+TimeSeriesParallelProgram.cpp - Parallelized Time Series Program.
 
 Compiling and running Time Series:
 TimeSeriesProgram.cpp
@@ -22,6 +22,6 @@ ImageMatchProgram.cpp
  Compile: g++ ImageMatch.cpp ImageMatchProgram.cpp
  Run: ./a.out <ImageFile.txt> <ImageTemplate.txt>
 
-ImageMatchParallel
- Compile - mpic++ -g -Wall -o image ImageMatchParallel.cpp
+ImageMatchParallelProgram.cpp
+ Compile - mpic++ -g -Wall -o image ImageMatchParallelProgram.cpp
  Run - mpiexec -n <nproc> ./image <fileA> <fileB>

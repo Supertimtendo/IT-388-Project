@@ -1,3 +1,5 @@
+//Sequential File
+
 #include "ImageMatch.h"
 #include <vector>
 #include <string>
@@ -11,6 +13,7 @@ int main(int argc, char const *argv[])
 		exit(1);
     }
 
+    //File names
     string fileName = argv[1];
 	string templateName = argv[2];
 
@@ -18,11 +21,15 @@ int main(int argc, char const *argv[])
     vector<vector<int>> temp;
 
     ImageMatch match;
+    //Read image
     match.parseImage(fileName);
 
+    //Read template
     match.parseTemplate(templateName);
 
+    //Perform template match
     vector<double> arr = match.matchImage();
 
+    //Print results
     cout << "X: " << arr[0] << ", Y: " << arr[1] << ", SAD Value: " << arr[2] << endl;
 }
