@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH --job-name="timeSeries"
+#SBATCH --output="outputTimeSeries.%j.%N.txt"
+#SBATCH --partition=compute
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=128
+#SBATCH --account=isu102
+#SBATCH --export=ALL
+#SBATCH --mem=4GB
+#SBATCH -t 00:10:00
+
+srun -n 1 ./timeSeries TimeSeries.txt exampleTemplate.txt > output_run1.log 2>&1
+
+srun -n 2 ./timeSeries TimeSeries.txt exampleTemplate.txt > output_run2.log 2>&1
+
+srun -n 4 ./timeSeries TimeSeries.txt exampleTemplate.txt > output_run4.log 2>&1
+
+srun -n 8 ./timeSeries TimeSeries.txt exampleTemplate.txt > output_run8.log 2>&1
+
+srun -n 12 ./timeSeries TimeSeries.txt exampleTemplate.txt > output_run12.log 2>&1
+

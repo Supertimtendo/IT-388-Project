@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH --job-name="imageParallel"
+#SBATCH --output="outputimageParallel.%j.%N.txt"
+#SBATCH --partition=compute
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=128
+#SBATCH --account=isu102
+#SBATCH --export=ALL
+#SBATCH --mem=4GB
+#SBATCH -t 00:10:00
+
+srun -n 1 ./imageParallel exampleImage.txt exampleTemplateImage.txt > output_run1.log 2>&1
+
+srun -n 2 ./imageParallel exampleImage.txt exampleTemplateImage.txt > output_run2.log 2>&1
+
+srun -n 4 ./imageParallel exampleImage.txt exampleTemplateImage.txt > output_run4.log 2>&1
+
+srun -n 8 ./imageParallel exampleImage.txt exampleTemplateImage.txt > output_run8.log 2>&1
+
+srun -n 12 ./imageParallel exampleImage.txt exampleTemplateImage.txt > output_run12.log 2>&1
+
