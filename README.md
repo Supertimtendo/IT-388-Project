@@ -1,14 +1,27 @@
 # IT-388-Project
 
-ImageMatch.cpp - Currently in use, is the implementation file for all Image Template matching methods.
-ImageMatch.h - Currently in use, is the header file for all Image Template matching methods and variables.
-ImageProgram.cpp - Currently in use, is the main that runs the Image Template matching - requires a image and a template image to run.
+ImageMatch.cpp - Implementation file for all Image Template matching methods.
+ImageMatch.h - Header file for all Image Template matching methods and variables.
+ImageProgram.cpp - Main that runs the Image Template matching - requires a image and a template image to run.
+//Insert Parallel Image Match Program here
 
-TimeSeries.cpp - Not in use, Was an implemenation file for the time series matching, all methods were directly inserted into TimeSeriesProgram.cpp for simplicity.
-TimeSeries.h - Not in use, Was the header file, not needed as all required methods were put into the TimeSeriesProgram.cpp.
 TimeSeriesProgram.cpp - Currently in use, contains all methods required for template matching, requires a time series and a template series to run.
+TimeSeriesParallelProgram.cpp - Parallelized Time Series Program
 
-TimeSeriesParallelProgram.cpp - Not functional, Will be the parallelized version of the TimeSeriesProgram.cpp.
+Compiling and running Time Series:
+TimeSeriesProgram.cpp
+ Compile: g++ TimeSeriesProgram.cpp
+ Run: ./a.out <TimeSeries> <TemplateSeries>
 
-project.cpp - Not in use, was for having a single file perform all functions, functionalities split among other files and project.cpp is not needed at this time.
-project.h - Same as project.cpp.
+TimeSeriesParallelProgram.cpp
+ Compile: mpic++ -g -Wall -o series TimeSeriesParallelProgram.cpp
+ Run: mpiexec -n 4 ./series <fileA> <fileB>
+
+Compiling and running Image Matching:
+ImageMatchProgram.cpp
+ Compile: g++ ImageMatch.cpp ImageMatchProgram.cpp
+ Run: ./a.out <ImageFile.txt> <ImageTemplate.txt>
+
+ImageMatchParallel
+ Compile - mpic++ -g -Wall -o image ImageMatchParallel.cpp
+ Run - mpiexec -n <nproc> ./image <fileA> <fileB>
