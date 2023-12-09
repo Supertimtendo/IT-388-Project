@@ -1,13 +1,18 @@
+//Sequential File
+
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 using namespace std;
 
+//Read in a .txt series file and insert data into a vector
 vector<double> createSeries(string fileName, vector<double> data);
 
+//Read in a .txt template file and insert data into vector
 vector<double> parseTemplate(string fileName, vector<double> data);
 
+//Perform a template match of a series vector for a template vector
 int matchTemplate(vector<double> series, vector<double> temp);
 
 int main(int argc, char* argv[]){

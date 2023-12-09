@@ -1,7 +1,7 @@
 /*
-Parallelized Time Series Program with MPI
-compile - mpi++ -g -Wall -o series ImageMatchParallel.cpp
-run - mpiexec -n 4 ./series <fileA> <fileB>
+Parallelized Image Matching Program with MPI
+compile - mpi++ -g -Wall -o image ImageMatchParallel.cpp
+run - mpiexec -n 4 ./image <fileA> <fileB>
 */
 #include "ImageMatch.h"
 #include <iostream>
@@ -12,21 +12,20 @@ run - mpiexec -n 4 ./series <fileA> <fileB>
 
 using namespace std;
 
-
 vector<vector<double>> imageVec;
 vector<vector<double>> templateVec;
 
+//Read a .txt file containing grayscale pixel values into the image vector
 void parseImage(string fileName);
 
+//Read a .txt file containing grayscale pixel values into an template vector
 void parseTemplate(string fileName);
 
-
-
-
+/**
+ * Template match image and template
+ * @return Returns array with position and SAD values
+ */
 vector<double> matchImage(int local_x, int work);
-
-
-
 
 int main(int argc, char* argv[]) {
    // MPI Initialize
@@ -35,16 +34,10 @@ int main(int argc, char* argv[]) {
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
-
-
-
    // Other variables
    vector<vector<double>> global_Result;
    int bestPos;
    double minSAD = 10000000;
-
-
-
 
    if (argc != 3) {
        if (rank == 0)
@@ -54,9 +47,9 @@ int main(int argc, char* argv[]) {
        return 0;
    }
 
+    //File names
    string fileName = argv[1];
    string templateName = argv[2];
-
 
    if (rank == 0) {
        // Create series
@@ -64,11 +57,9 @@ int main(int argc, char* argv[]) {
 
        // Create template
        parseTemplate(templateName);
-
    }
 
-
-// broadcast imagevec and templatevec to all processes
+   // broadcast imagevec and templatevec to all processes
    int rows, cols, tempRows, tempCols;
    if (rank==0)
    {
@@ -80,15 +71,12 @@ int main(int argc, char* argv[]) {
    MPI_Bcast(&tempRows, 1, MPI_INT, 0, MPI_COMM_WORLD);
    MPI_Bcast(&tempCols, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-
    if (rank!=0)
    {
        imageVec.resize(rows, vector<double>(cols,0));
        templateVec.resize(tempRows, vector<double>(tempCols,0));
    }
   
-
-
    for (int i = 0; i < rows; i++)
    {
    MPI_Bcast(imageVec[i].data(), cols, MPI_DOUBLE, 0, MPI_COMM_WORLD);      
@@ -98,22 +86,14 @@ int main(int argc, char* argv[]) {
    MPI_Bcast(templateVec[i].data(), tempCols, MPI_DOUBLE, 0, MPI_COMM_WORLD);      
    }
   
-  
    int serSize = imageVec.size() * imageVec[0].size();
    int tempSize = templateVec.size() * templateVec[0].size();
-
-
-
 
    MPI_Bcast(&serSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
    MPI_Bcast(&tempSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-
-
-
    double* serArr = new double[serSize];
    double* tempArr = new double[tempSize];
-
 
    if (rank == 0) {
        // Flatten the series and template vectors for broadcasting
@@ -124,7 +104,6 @@ int main(int argc, char* argv[]) {
            }
        }
 
-
        idx = 0;
        for (int i = 0; i < templateVec.size(); ++i) {
            for (int j = 0; j < templateVec[0].size(); ++j) {
@@ -133,25 +112,18 @@ int main(int argc, char* argv[]) {
        }
    }
 
-
    MPI_Bcast(serArr, serSize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
    MPI_Bcast(tempArr, tempSize, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
 
    // Match
    int work = (serSize - tempSize) / nproc;
    int remainder = (serSize-tempSize) % nproc;
    int local_x = work * rank;
 
-
    MPI_Barrier(MPI_COMM_WORLD);
    double start = MPI_Wtime();
 
-
    vector<double> local_Result = matchImage(local_x, work);
-
-
-
 
    // Each process inserts its local vector into the global vector
    for (int i = 0; i < nproc; ++i) {
@@ -161,21 +133,14 @@ int main(int argc, char* argv[]) {
        MPI_Barrier(MPI_COMM_WORLD); // Ensure they wait their turn
    }
 
-
    if (rank==0)
    {
        delete[] serArr;
        delete[] tempArr;
    }
 
-
-
-
    MPI_Barrier(MPI_COMM_WORLD);
    double elapsedTime = MPI_Wtime() - start;
-
-
-
 
    // Host gets the best vector
    if (rank == 0) {
@@ -190,25 +155,17 @@ int main(int argc, char* argv[]) {
        cout << "Time: " << elapsedTime << endl;
    }
 
-
-
-
    MPI_Finalize();
    return 0;
 }
 
-
-
-
 void parseImage(string fileName) {
    ifstream file(fileName);
-
 
    if (!file.is_open()) {
        cout << "Error: Unable to open the file." << endl;
        MPI_Abort(MPI_COMM_WORLD, 1);
    }
-
 
    // Create a 2D vector to store doubles
    vector<vector<double>> image;
@@ -289,7 +246,6 @@ vector<double> matchImage(int local_x, int work) {
    double SAD = 0.0;
    double bestSAD = minSAD;
 
-
    // Loop through base image
    for (int x = local_x; x < local_x + (work/baseCol); x++) {
        for (int y = 0; y < baseCol; y++){
@@ -309,9 +265,6 @@ vector<double> matchImage(int local_x, int work) {
                    }
                }
            }
-
-
-
 
            if (SAD < minSAD) {
                minSAD = SAD;

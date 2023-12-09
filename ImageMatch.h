@@ -1,6 +1,4 @@
-//
-// Created by Tim on 11/29/2023.
-//
+// Sequential File
 
 #ifndef IMAGEMATCH_H
 #define IMAGEMATCH_H
